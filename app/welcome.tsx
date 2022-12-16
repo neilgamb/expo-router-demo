@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
-import { Link, Stack } from "expo-router";
+import { Link } from "expo-router";
 
-export default function Home() {
+export default function Welcome() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>Welcome</Text>
