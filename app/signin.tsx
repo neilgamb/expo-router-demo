@@ -5,10 +5,10 @@ import useAuthStore from "../state/auth";
 
 export default function SignIn({ navigation }) {
   const { theme } = useDripsyTheme();
-  const { isAuthenticated, setIsAuthenticated } = useAuthStore();
+  const { isAuthenticated, setIsAuthenticated, path } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated) navigation.navigate("(home)");
+    if (isAuthenticated) navigation.navigate("(home)", { screen: path });
   }, [isAuthenticated]);
 
   return (

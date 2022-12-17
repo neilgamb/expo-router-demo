@@ -5,12 +5,13 @@ import useAuthStore from "../../state/auth";
 
 export default function Home({ route }) {
   const { theme } = useDripsyTheme();
-  const { setIsAuthenticated, setQueryParams, queryParams } = useAuthStore();
+  const { setIsAuthenticated, setQueryParams, setPath } = useAuthStore();
 
   useEffect(() => {
     if (route.params) {
       setQueryParams(route.params);
     }
+    setPath(route.name);
   }, []);
 
   return (
