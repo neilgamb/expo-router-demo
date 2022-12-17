@@ -17,12 +17,11 @@ Amplify.configure({
 export default function RootLayout() {
   const { isAuthenticated, authenticate, path, queryParams } = useAuthStore();
   const navigation = useNavigation();
-  const [hasAuthenticated, setHasAuthenticated] = useState(false);
+  const [hasAuthenticated] = useState(false);
 
   useEffect(() => {
-    console.log(isAuthenticated);
     if (!isAuthenticated) {
-      navigation.navigate("signin");
+      navigation.navigate("auth-loading");
     } else {
       navigation.navigate("(home)", { screen: path });
     }
