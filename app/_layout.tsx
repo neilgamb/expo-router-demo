@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Layout, useNavigation } from "expo-router";
 import { DripsyProvider } from "dripsy";
 import { Amplify } from "aws-amplify";

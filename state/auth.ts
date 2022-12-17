@@ -36,11 +36,11 @@ const useAuthStore = create<AuthState>((set) => ({
           const headers = getHeadersWithToken(
             session.getIdToken().getJwtToken()
           );
-
           set(() => ({
             headers,
             isAuthenticated: true,
           }));
+          console.log("Authenticated!");
         } else {
           const { authCode, animalOwnerSmsNumber } = queryParams;
           if (authCode && animalOwnerSmsNumber) {
@@ -50,6 +50,7 @@ const useAuthStore = create<AuthState>((set) => ({
                 isAuthenticated: true,
                 headers,
               }));
+              console.log("Authenticated!");
             });
           }
         }
