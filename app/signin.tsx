@@ -1,15 +1,10 @@
-import { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useDripsyTheme } from "dripsy";
 import useAuthStore from "../state/auth";
 
-export default function SignIn({ navigation }) {
+export default function SignIn() {
   const { theme } = useDripsyTheme();
-  const { isAuthenticated, setIsAuthenticated } = useAuthStore();
-
-  useEffect(() => {
-    if (isAuthenticated) navigation.push("(home)");
-  }, [isAuthenticated]);
+  const { setIsAuthenticated } = useAuthStore();
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
