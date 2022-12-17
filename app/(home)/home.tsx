@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useDripsyTheme } from "dripsy";
 import useAuthStore from "../../state/auth";
 
-export default function Home({ navigation }) {
+export default function Home({ route }) {
   const { theme } = useDripsyTheme();
   const { setIsAuthenticated } = useAuthStore();
 
