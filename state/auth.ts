@@ -17,7 +17,7 @@ interface AuthState {
   headers: Header;
   path: string;
   setPath: (path: string) => void;
-  authenticate: (queryParams: any) => void;
+  authenticate: (queryParams?: any) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setQueryParams: (queryParams: AuthQueryParams) => void;
 }
@@ -28,7 +28,7 @@ const useAuthStore = create<AuthState>((set) => ({
   headers: {},
   path: "home",
   setPath: (path: string) => set({ path }),
-  authenticate: (queryParams) => {
+  authenticate: (queryParams?: AuthQueryParams) => {
     console.log("authenticating...");
     getCurrentSession()
       .then(async (session) => {

@@ -27,7 +27,7 @@ export default function RootLayout() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    queryParams && authenticate(queryParams);
+    queryParams ? authenticate(queryParams) : authenticate();
   }, [queryParams]);
 
   return (
