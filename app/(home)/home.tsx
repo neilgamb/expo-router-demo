@@ -1,30 +1,24 @@
+import { useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useDripsyTheme } from "dripsy";
 import useAuthStore from "../../state/auth";
 
 export default function Home({ navigation }) {
-  const theme = useDripsyTheme();
-  const { setIsAuthenticated } = useAuthStore();
+  const { theme } = useDripsyTheme();
+  const { isAuthenticated, setIsAuthenticated } = useAuthStore();
 
-  console.log(theme);
+  useEffect(() => {
+    if (!isAuthenticated) navigation.navigate("signin");
+  }, [isAuthenticated]);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>home</Text>
       <TouchableOpacity
         onPress={() => setIsAuthenticated(false)}
-        style={{
-          marginTop: 12,
-          borderWidth: 1,
-          borderColor: "blue",
-          paddingHorizontal: 10,
-          paddingVertical: 5,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: 7,
-        }}
+        style={theme.buttons.primaryContainer}
       >
-        <Text style={{ color: "blue" }}>sign out</Text>
+        <Text style={theme.buttons.primaryText}>sign out</Text>
       </TouchableOpacity>
     </View>
   );
