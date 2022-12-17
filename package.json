@@ -8,6 +8,7 @@
   "dependencies": {
     "@types/react": "~18.0.24",
     "@types/react-native": "~0.70.6",
+    "dripsy": "^3.8.1",
     "expo": "~47.0.3",
     "expo-constants": "~14.0.2",
     "expo-linking": "~3.2.3",
