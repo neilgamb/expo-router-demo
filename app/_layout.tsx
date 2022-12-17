@@ -17,7 +17,6 @@ Amplify.configure({
 export default function RootLayout() {
   const { isAuthenticated, authenticate, path, queryParams } = useAuthStore();
   const navigation = useNavigation();
-  const [hasAuthenticated] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -28,9 +27,7 @@ export default function RootLayout() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (queryParams && !hasAuthenticated) {
-      authenticate(queryParams);
-    }
+    queryParams && authenticate(queryParams);
   }, [queryParams]);
 
   return (

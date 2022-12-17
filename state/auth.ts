@@ -1,7 +1,7 @@
 import create from "zustand";
 import { Auth } from "aws-amplify";
 
-type AuthQueryParam = {
+type AuthQueryParams = {
   authCode: string;
   animalOwnerEmail: string;
   animalOwnerSmsNumber: string;
@@ -13,18 +13,18 @@ type Header = {
 
 interface AuthState {
   isAuthenticated: boolean;
-  queryParams: AuthQueryParam[];
+  queryParams: AuthQueryParams | null;
   headers: Header;
   path: string;
   setPath: (path: string) => void;
   authenticate: (queryParams: any) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  setQueryParams: (queryParams: AuthQueryParam[]) => void;
+  setQueryParams: (queryParams: AuthQueryParams) => void;
 }
 
 const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
-  queryParams: [],
+  queryParams: null,
   headers: {},
   path: "home",
   setPath: (path: string) => set({ path }),
@@ -37,14 +37,19 @@ const useAuthStore = create<AuthState>((set) => ({
             session.getIdToken().getJwtToken()
           );
 
-          set(() => ({ headers, isAuthenticated: true }));
+          set(() => ({
+            headers,
+            isAuthenticated: true,
+          }));
         } else {
           const { authCode, animalOwnerSmsNumber } = queryParams;
-
           if (authCode && animalOwnerSmsNumber) {
             getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
               const headers = getHeadersWithToken(value);
-              set(() => ({ isAuthenticated: true, headers }));
+              set(() => ({
+                isAuthenticated: true,
+                headers,
+              }));
             });
           }
         }
@@ -52,7 +57,7 @@ const useAuthStore = create<AuthState>((set) => ({
       .catch(() => set({ isAuthenticated: false }));
   },
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
-  setQueryParams: (queryParams: AuthQueryParam[]) => set({ queryParams }),
+  setQueryParams: (queryParams: AuthQueryParams) => set({ queryParams }),
 }));
 
 export default useAuthStore;
