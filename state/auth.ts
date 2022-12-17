@@ -17,7 +17,7 @@ interface AuthState {
   headers: Header;
   path: string;
   setPath: (path: string) => void;
-  authenticate: () => void;
+  authenticate: (queryParams: any) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setQueryParams: (queryParams: AuthQueryParam[]) => void;
 }
@@ -28,7 +28,7 @@ const useAuthStore = create<AuthState>((set) => ({
   headers: {},
   path: "home",
   setPath: (path: string) => set({ path }),
-  authenticate: () => {
+  authenticate: (queryParams) => {
     console.log("authenticating...");
     getCurrentSession()
       .then(async (session) => {
@@ -37,21 +37,16 @@ const useAuthStore = create<AuthState>((set) => ({
             session.getIdToken().getJwtToken()
           );
 
-          set((state) => ({ headers, isAuthenticated: true }));
+          set(() => ({ headers, isAuthenticated: true }));
         } else {
-          set((state) => {
-            const { authCode, animalOwnerSmsNumber } = state.queryParams;
-            let isAuthenticated = false;
-            let headers = {};
+          const { authCode, animalOwnerSmsNumber } = queryParams;
 
-            if (authCode && animalOwnerSmsNumber) {
-              getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
-                headers = getHeadersWithToken(value);
-                isAuthenticated = true;
-              });
-              return { isAuthenticated, headers };
-            }
-          });
+          if (authCode && animalOwnerSmsNumber) {
+            getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
+              const headers = getHeadersWithToken(value);
+              set(() => ({ isAuthenticated: true, headers }));
+            });
+          }
         }
       })
       .catch(() => set({ isAuthenticated: false }));

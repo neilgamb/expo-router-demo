@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Layout, useNavigation } from "expo-router";
 import { DripsyProvider } from "dripsy";
 import { Amplify } from "aws-amplify";
@@ -15,16 +15,24 @@ Amplify.configure({
 });
 
 export default function RootLayout() {
-  const { isAuthenticated, authenticate, path } = useAuthStore();
+  const { isAuthenticated, authenticate, path, queryParams } = useAuthStore();
   const navigation = useNavigation();
+  const [hasAuthenticated, setHasAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) navigation.navigate("signin");
+    console.log(isAuthenticated);
+    if (!isAuthenticated) {
+      navigation.navigate("signin");
+    } else {
+      navigation.navigate("(home)", { screen: path });
+    }
   }, [isAuthenticated]);
 
   useEffect(() => {
-    authenticate();
-  }, []);
+    if (queryParams && !hasAuthenticated) {
+      authenticate(queryParams);
+    }
+  }, [queryParams]);
 
   return (
     <DripsyProvider theme={theme}>
