@@ -6,9 +6,8 @@ export default function Details({ route }) {
   const { setQueryParams } = useAuthStore();
 
   useEffect(() => {
-    const queryParams = route.params;
-    if (queryParams) {
-      setQueryParams(queryParams);
+    if (route.params) {
+      setQueryParams(route.params);
     }
   }, []);
 

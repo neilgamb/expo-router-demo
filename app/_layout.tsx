@@ -13,11 +13,6 @@ export default function RootLayout() {
     if (!isAuthenticated) navigation.navigate("signin");
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    console.log("queryParams: ");
-    console.log(queryParams);
-  }, [queryParams]);
-
   return (
     <DripsyProvider theme={theme}>
       <Layout>
