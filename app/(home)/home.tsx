@@ -3,13 +3,10 @@ import { View, Text } from "react-native";
 import useAuthStore from "../../state/auth";
 
 export default function Home({ route }) {
-  const { setQueryParams, setPath } = useAuthStore();
+  const { setQueryParams } = useAuthStore();
 
   useEffect(() => {
-    if (route.params) {
-      setQueryParams(route.params);
-    }
-    setPath(route.name);
+    route.params && setQueryParams(route.params);
   }, []);
 
   return (

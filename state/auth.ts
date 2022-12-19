@@ -16,8 +16,6 @@ interface AuthState {
   isAuthenticating: boolean;
   queryParams: AuthQueryParams | null;
   headers: Header;
-  path: string;
-  setPath: (path: string) => void;
   authenticate: () => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setQueryParams: (queryParams: AuthQueryParams) => void;
@@ -28,8 +26,6 @@ const useAuthStore = create<AuthState>((set, state) => ({
   isAuthenticating: true,
   queryParams: null,
   headers: {},
-  path: "home",
-  setPath: (path: string) => set({ path }),
   authenticate: async () => {
     try {
       const session = await getCurrentSession();
@@ -41,9 +37,10 @@ const useAuthStore = create<AuthState>((set, state) => ({
           isAuthenticating: false,
         }));
       } else {
+        console.log(state());
         const { authCode, animalOwnerSmsNumber } = state().queryParams;
+        console.log(authCode, animalOwnerSmsNumber);
         if (authCode && animalOwnerSmsNumber) {
-          console.log(authCode, animalOwnerSmsNumber);
           const token = await getResourceToken(animalOwnerSmsNumber, authCode);
           const headers = getHeadersWithToken(token);
           set(() => ({
