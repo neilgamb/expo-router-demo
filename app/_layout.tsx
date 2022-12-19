@@ -19,16 +19,15 @@ export default function RootLayout() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigation.navigate("auth-loading");
-    } else {
+    if (isAuthenticated) {
       navigation.navigate("(home)", { screen: path });
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
-    queryParams ? authenticate(queryParams) : authenticate();
-  }, [queryParams]);
+    navigation.navigate("auth-loading");
+    authenticate();
+  }, []);
 
   return (
     <DripsyProvider theme={theme}>

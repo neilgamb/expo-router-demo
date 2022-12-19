@@ -17,45 +17,58 @@ interface AuthState {
   headers: Header;
   path: string;
   setPath: (path: string) => void;
-  authenticate: (queryParams?: any) => void;
+  authenticate: () => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setQueryParams: (queryParams: AuthQueryParams) => void;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create<AuthState>((set, state) => ({
   isAuthenticated: false,
   queryParams: null,
   headers: {},
   path: "home",
   setPath: (path: string) => set({ path }),
-  authenticate: (queryParams?: AuthQueryParams) => {
-    console.log("authenticating...");
-    getCurrentSession()
-      .then(async (session) => {
-        if (session) {
-          const headers = getHeadersWithToken(
-            session.getIdToken().getJwtToken()
-          );
-          set(() => ({
-            headers,
-            isAuthenticated: true,
-          }));
-          console.log("Authenticated!");
-        } else {
-          const { authCode, animalOwnerSmsNumber } = queryParams;
-          if (authCode && animalOwnerSmsNumber) {
-            getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
-              const headers = getHeadersWithToken(value);
-              set(() => ({
-                isAuthenticated: true,
-                headers,
-              }));
-              console.log("Authenticated!");
-            });
-          }
-        }
-      })
-      .catch(() => set({ isAuthenticated: false }));
+  authenticate: async () => {
+    const session = await getCurrentSession();
+    if (session) {
+      const headers = getHeadersWithToken(session.getIdToken().getJwtToken());
+      set(() => ({ headers, isAuthenticated: true }));
+    } else {
+      const { authCode, animalOwnerSmsNumber } = state().queryParams;
+      if (authCode && animalOwnerSmsNumber) {
+        console.log(authCode, animalOwnerSmsNumber);
+        const token = await getResourceToken(authCode, animalOwnerSmsNumber);
+        console.log(token);
+      }
+    }
+
+    // console.log("authenticating...");
+    // getCurrentSession()
+    //   .then(async (session) => {
+    //     if (session) {
+    //       const headers = getHeadersWithToken(
+    //         session.getIdToken().getJwtToken()
+    //       );
+    //       set(() => ({
+    //         headers,
+    //         isAuthenticated: true,
+    //       }));
+    //       console.log("Authenticated!");
+    //     } else {
+    //       const { authCode, animalOwnerSmsNumber } = queryParams;
+    //       if (authCode && animalOwnerSmsNumber) {
+    //         getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
+    //           const headers = getHeadersWithToken(value);
+    //           set(() => ({
+    //             isAuthenticated: true,
+    //             headers,
+    //           }));
+    //           console.log("Authenticated!");
+    //         });
+    //       }
+    //     }
+    //   })
+    //   .catch(() => set({ isAuthenticated: false }));
   },
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   setQueryParams: (queryParams: AuthQueryParams) => set({ queryParams }),
