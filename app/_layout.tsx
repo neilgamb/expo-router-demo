@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 import { Layout, useNavigation } from "expo-router";
-import { DripsyProvider } from "dripsy";
+import { DripsyProvider, View } from "dripsy";
 import { Amplify } from "aws-amplify";
 import theme from "../style/theme";
 import useAuthStore from "../state/auth";
@@ -15,25 +16,32 @@ Amplify.configure({
 });
 
 export default function RootLayout() {
-  const { isAuthenticated, authenticate, path, queryParams } = useAuthStore();
+  const { authenticate, isAuthenticated, isAuthenticating } = useAuthStore();
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigation.navigate("(home)", { screen: path });
+    if (!isAuthenticated && !isAuthenticating) {
+      navigation.navigate("unauthorized");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthenticating]);
 
   useEffect(() => {
-    navigation.navigate("auth-loading");
     authenticate();
   }, []);
 
   return (
     <DripsyProvider theme={theme}>
-      <Layout>
-        <Layout.Children />
-      </Layout>
+      {isAuthenticating ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" animating />
+        </View>
+      ) : (
+        <Layout>
+          <Layout.Children />
+        </Layout>
+      )}
     </DripsyProvider>
   );
 }

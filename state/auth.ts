@@ -13,6 +13,7 @@ type Header = {
 
 interface AuthState {
   isAuthenticated: boolean;
+  isAuthenticating: boolean;
   queryParams: AuthQueryParams | null;
   headers: Header;
   path: string;
@@ -24,51 +25,39 @@ interface AuthState {
 
 const useAuthStore = create<AuthState>((set, state) => ({
   isAuthenticated: false,
+  isAuthenticating: true,
   queryParams: null,
   headers: {},
   path: "home",
   setPath: (path: string) => set({ path }),
   authenticate: async () => {
-    const session = await getCurrentSession();
-    if (session) {
-      const headers = getHeadersWithToken(session.getIdToken().getJwtToken());
-      set(() => ({ headers, isAuthenticated: true }));
-    } else {
-      const { authCode, animalOwnerSmsNumber } = state().queryParams;
-      if (authCode && animalOwnerSmsNumber) {
-        console.log(authCode, animalOwnerSmsNumber);
-        const token = await getResourceToken(authCode, animalOwnerSmsNumber);
-        console.log(token);
+    try {
+      const session = await getCurrentSession();
+      if (session) {
+        const headers = getHeadersWithToken(session.getIdToken().getJwtToken());
+        set(() => ({
+          headers,
+          isAuthenticated: true,
+          isAuthenticating: false,
+        }));
+      } else {
+        const { authCode, animalOwnerSmsNumber } = state().queryParams;
+        if (authCode && animalOwnerSmsNumber) {
+          console.log(authCode, animalOwnerSmsNumber);
+          const token = await getResourceToken(animalOwnerSmsNumber, authCode);
+          const headers = getHeadersWithToken(token);
+          set(() => ({
+            headers,
+            isAuthenticated: true,
+            isAuthenticating: false,
+          }));
+        }
       }
+    } catch (error) {
+      set(() => ({
+        isAuthenticating: false,
+      }));
     }
-
-    // console.log("authenticating...");
-    // getCurrentSession()
-    //   .then(async (session) => {
-    //     if (session) {
-    //       const headers = getHeadersWithToken(
-    //         session.getIdToken().getJwtToken()
-    //       );
-    //       set(() => ({
-    //         headers,
-    //         isAuthenticated: true,
-    //       }));
-    //       console.log("Authenticated!");
-    //     } else {
-    //       const { authCode, animalOwnerSmsNumber } = queryParams;
-    //       if (authCode && animalOwnerSmsNumber) {
-    //         getResourceToken(animalOwnerSmsNumber, authCode).then((value) => {
-    //           const headers = getHeadersWithToken(value);
-    //           set(() => ({
-    //             isAuthenticated: true,
-    //             headers,
-    //           }));
-    //           console.log("Authenticated!");
-    //         });
-    //       }
-    //     }
-    //   })
-    //   .catch(() => set({ isAuthenticated: false }));
   },
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
   setQueryParams: (queryParams: AuthQueryParams) => set({ queryParams }),
