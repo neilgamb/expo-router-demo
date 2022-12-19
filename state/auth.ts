@@ -37,9 +37,7 @@ const useAuthStore = create<AuthState>((set, state) => ({
           isAuthenticating: false,
         }));
       } else {
-        console.log(state());
         const { authCode, animalOwnerSmsNumber } = state().queryParams;
-        console.log(authCode, animalOwnerSmsNumber);
         if (authCode && animalOwnerSmsNumber) {
           const token = await getResourceToken(animalOwnerSmsNumber, authCode);
           const headers = getHeadersWithToken(token);

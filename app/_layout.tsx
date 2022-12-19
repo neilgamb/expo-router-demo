@@ -17,17 +17,15 @@ Amplify.configure({
 export default function RootLayout() {
   const { authenticate, isAuthenticated, isAuthenticating, queryParams } =
     useAuthStore();
-  const navigation = useNavigation();
+  const { navigate, getCurrentRoute } = useNavigation();
 
   useEffect(() => {
-    const currentRoute = navigation.getCurrentRoute();
+    const currentRoute = getCurrentRoute();
 
     if (!isAuthenticated && !isAuthenticating) {
-      navigation.navigate("unauthorized");
+      navigate("unauthorized");
     } else if (currentRoute) {
-      navigation.navigate("(home)", {
-        screen: navigation.getCurrentRoute().name,
-      });
+      navigate("(home)", { screen: currentRoute.name });
     }
   }, [isAuthenticated, isAuthenticating]);
 
