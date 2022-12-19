@@ -54,9 +54,11 @@ const useAuthStore = create<AuthState>((set, state) => ({
         }
       }
     } catch (error) {
-      set(() => ({
-        isAuthenticating: false,
-      }));
+      setTimeout(() => {
+        set(() => ({
+          isAuthenticating: false,
+        }));
+      }, 200);
     }
   },
   setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),

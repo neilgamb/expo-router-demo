@@ -16,12 +16,15 @@ Amplify.configure({
 });
 
 export default function RootLayout() {
-  const { authenticate, isAuthenticated, isAuthenticating } = useAuthStore();
+  const { authenticate, isAuthenticated, isAuthenticating, path } =
+    useAuthStore();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (!isAuthenticated && !isAuthenticating) {
       navigation.navigate("unauthorized");
+    } else if (isAuthenticated) {
+      navigation.navigate(`(home)`, { screen: path });
     }
   }, [isAuthenticated, isAuthenticating]);
 
@@ -32,11 +35,7 @@ export default function RootLayout() {
   return (
     <DripsyProvider theme={theme}>
       {isAuthenticating ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <ActivityIndicator size="large" animating />
-        </View>
+        <Loading />
       ) : (
         <Layout>
           <Layout.Children />
@@ -45,3 +44,9 @@ export default function RootLayout() {
     </DripsyProvider>
   );
 }
+
+const Loading = () => (
+  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <ActivityIndicator size="large" animating />
+  </View>
+);
