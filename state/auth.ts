@@ -1,63 +1,65 @@
 import create from "zustand";
 import { Auth } from "aws-amplify";
 
-type AuthQueryParams = {
-  authCode: string;
-  animalOwnerEmail: string;
-  animalOwnerSmsNumber: string;
+export type AuthQueryParams = {
+  authCode?: string;
+  animalOwnerSmsNumber?: string;
 };
 
-type Header = {
+export type Header = {
   [key: string]: unknown;
 };
 
 interface AuthState {
   isAuthenticated: boolean;
   isAuthenticating: boolean;
-  queryParams: AuthQueryParams | null;
+  authQueryParams: AuthQueryParams | null;
   headers: Header;
-  authenticate: () => void;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
-  setQueryParams: (queryParams: AuthQueryParams) => void;
+  authenticate: (authQueryParams?: AuthQueryParams) => void;
 }
 
-const useAuthStore = create<AuthState>((set, state) => ({
+const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isAuthenticating: true,
-  queryParams: null,
+  authQueryParams: null,
   headers: {},
-  authenticate: async () => {
-    try {
-      const session = await getCurrentSession();
-      if (session) {
-        const headers = getHeadersWithToken(session.getIdToken().getJwtToken());
+  authenticate: async ({ authCode, animalOwnerSmsNumber }: AuthQueryParams) => {
+    if (authCode && animalOwnerSmsNumber) {
+      try {
+        const token = await getResourceToken(animalOwnerSmsNumber, authCode);
+        const headers = getHeadersWithToken(token);
         set(() => ({
           headers,
           isAuthenticated: true,
           isAuthenticating: false,
         }));
-      } else {
-        const { authCode, animalOwnerSmsNumber } = state().queryParams;
-        if (authCode && animalOwnerSmsNumber) {
-          const token = await getResourceToken(animalOwnerSmsNumber, authCode);
-          const headers = getHeadersWithToken(token);
+      } catch (error) {
+        console.log(error);
+        set(() => ({
+          isAuthenticating: false,
+        }));
+      }
+    } else {
+      const session = await getCurrentSession();
+      if (session) {
+        try {
+          const headers = getHeadersWithToken(
+            session.getIdToken().getJwtToken()
+          );
           set(() => ({
             headers,
             isAuthenticated: true,
             isAuthenticating: false,
           }));
+        } catch (error) {
+          console.log(error);
+          set(() => ({ isAuthenticating: false }));
         }
+      } else {
+        set(() => ({ isAuthenticating: false }));
       }
-    } catch (error) {
-      setTimeout(() => {
-        set(() => ({
-          isAuthenticating: false,
-        }));
-      }, 200);
     }
   },
-  setIsAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
-  setQueryParams: (queryParams: AuthQueryParams) => set({ queryParams }),
 }));
 
 export default useAuthStore;
