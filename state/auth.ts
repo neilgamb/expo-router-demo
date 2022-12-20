@@ -35,9 +35,7 @@ const useAuthStore = create<AuthState>((set) => ({
         }));
       } catch (error) {
         console.log(error);
-        set(() => ({
-          isAuthenticating: false,
-        }));
+        set(() => ({ isAuthenticating: false }));
       }
     } else {
       const session = await getCurrentSession();

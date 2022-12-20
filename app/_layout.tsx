@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 import { Layout, useNavigation } from "expo-router";
 import { DripsyProvider } from "dripsy";
 import { Amplify } from "aws-amplify";
+
 import theme from "../style/theme";
 import useAuthStore from "../state/auth";
 
@@ -26,10 +27,10 @@ export default function RootLayout() {
 
     if (!isAuthenticated && !isAuthenticating) {
       navigate("unauthorized");
-      setShowLoader(false);
+      setTimeout(() => setShowLoader(false), 500);
     } else if (currentRoute && isAuthenticated) {
       navigate("(home)", { screen: currentRoute.name });
-      setShowLoader(false);
+      setTimeout(() => setShowLoader(false), 500);
     }
   }, [isAuthenticated, isAuthenticating]);
 
