@@ -29,7 +29,7 @@ export default function RootLayout() {
       navigate("unauthorized");
       setTimeout(() => setShowLoader(false), 500);
     } else if (currentRoute && isAuthenticated) {
-      navigate("(home)", { screen: currentRoute.name });
+      navigate(currentRoute.name);
       setTimeout(() => setShowLoader(false), 500);
     }
   }, [isAuthenticated, isAuthenticating]);
